@@ -1,3 +1,6 @@
+//apply from: project(":unimodules-core").file("../unimodules-core.gradle")
+apply from: './gradle.groovy'
+
 buildscript {
   repositories {
     google()
@@ -44,6 +47,14 @@ uploadArchives {
   }
 }
 
+task generatePackageList {
+  doLast {
+    generateUnimodulesPackageList()
+  }
+}
+
+preBuild.dependsOn generatePackageList
+
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
@@ -56,15 +67,22 @@ android {
   lintOptions {
     abortOnError false
   }
+  sourceSets {
+    main {
+      java {
+         srcDirs += new File(project.buildDir, generatedSrcDir)
+      }
+    }
+  }
 }
 
-apply from: project(":unimodules-core").file("../unimodules-core.gradle")
-
 dependencies {
-  unimodule 'unimodules-core'
-  unimodule 'unimodules-font-interface'
-  unimodule 'unimodules-permissions-interface'
-  unimodule 'unimodules-image-loader-interface'
+  // unimodule 'unimodules-core'
+  // unimodule 'unimodules-font-interface'
+  // unimodule 'unimodules-permissions-interface'
+  // unimodule 'unimodules-image-loader-interface'
+
+  gradle.ext.addUnimodulesDependencies(project)
 
   implementation 'com.facebook.react:react-native:+'
 }
