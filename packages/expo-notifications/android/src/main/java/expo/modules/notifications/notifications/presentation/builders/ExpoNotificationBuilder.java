@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.interfaces.imageloader.ImageLoader;
@@ -107,6 +109,11 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
       builder.setVibrate(NO_VIBRATE_PATTERN);
     }
 
+    long[] vibrationPatternOverride = getVibrationPatternOverride();
+    if (vibrationPatternOverride != null) {
+      builder.setVibrate(vibrationPatternOverride);
+    }
+
     if (shouldSetBadge()) {
       // TODO: Set badge as an effect of presenting notification,
       //       not as an effect of building a notification.
@@ -191,5 +198,22 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
       default:
         return null;
     }
+  }
+
+  private long[] getVibrationPatternOverride() {
+    try {
+      JSONArray vibrateJsonArray = mNotificationRequest.optJSONArray(VIBRATE_KEY);
+      if (vibrateJsonArray != null) {
+        long[] pattern = new long[vibrateJsonArray.length()];
+        for (int i = 0; i < vibrateJsonArray.length(); i++) {
+          pattern[i] = vibrateJsonArray.getLong(i);
+        }
+        return pattern;
+      }
+    } catch (JSONException e) {
+      Log.w("expo-notifications", "Failed to set custom vibration pattern from the notification: " + e.getMessage());
+    }
+
+    return null;
   }
 }
