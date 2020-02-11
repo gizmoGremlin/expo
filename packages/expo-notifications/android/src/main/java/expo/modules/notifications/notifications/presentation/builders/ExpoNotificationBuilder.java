@@ -30,6 +30,7 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   private static final String BADGE_KEY = "badge";
   private static final String BODY_KEY = "body";
   private static final String PRIORITY_KEY = "priority";
+  private static final String VIBRATE_KEY = "vibrate";
   private static final String THUMBNAIL_URI_KEY = "thumbnailUri";
 
   private static final String EXTRAS_BADGE_KEY = "badge";
@@ -86,11 +87,19 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
     if (shouldPlaySound()) {
       // Attach default notification sound to the NotificationCompat.Builder
       builder.setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
-      builder.setDefaults(NotificationCompat.DEFAULT_ALL); // sets default vibration too
     } else {
       // Remove any sound attached to the NotificationCompat.Builder
       builder.setSound(null);
-      // Remove any sound attached by notification options.
+    }
+
+    if (shouldPlaySound() && shouldUseDefaultVibration()) {
+      builder.setDefaults(NotificationCompat.DEFAULT_ALL); // sets default vibration too
+    } else if (shouldUseDefaultVibration()) {
+      builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
+    } else if (shouldPlaySound()) {
+      builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
+    } else {
+      // Remove any sound or vibration attached by notification options.
       builder.setDefaults(0);
       // Remove any vibration pattern attached to the builder by overriding
       // it with a no-vibrate pattern. It also doubles as a cue for the OS
@@ -155,6 +164,10 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
 
   private boolean shouldPlaySound() {
     return mNotificationRequest.optBoolean(SOUND_KEY);
+  }
+
+  private boolean shouldUseDefaultVibration() {
+    return mNotificationRequest.optBoolean(SOUND_KEY) || mNotificationRequest.optBoolean(VIBRATE_KEY);
   }
 
   private boolean shouldSetBadge() {
