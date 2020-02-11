@@ -20,11 +20,11 @@
 #define JSI_EXPORT __declspec(dllexport)
 #else
 #define JSI_EXPORT
-#endif // JSI_CREATE_SHARED_LIBRARY
-#else // _MSC_VER
+#endif  // JSI_CREATE_SHARED_LIBRARY
+#else   // _MSC_VER
 #define JSI_EXPORT __attribute__((visibility("default")))
-#endif // _MSC_VER
-#endif // !defined(JSI_EXPORT)
+#endif  // _MSC_VER
+#endif  // !defined(JSI_EXPORT)
 
 class FBJSRuntime;
 namespace facebook {
@@ -40,9 +40,7 @@ class Buffer {
 class StringBuffer : public Buffer {
  public:
   StringBuffer(std::string s) : s_(std::move(s)) {}
-  size_t size() const override {
-    return s_.size();
-  }
+  size_t size() const override { return s_.size(); }
   const uint8_t* data() const override {
     return reinterpret_cast<const uint8_t*>(s_.data());
   }
@@ -51,8 +49,8 @@ class StringBuffer : public Buffer {
   std::string s_;
 };
 
-/// PreparedJavaScript is a base class representing JavaScript which is in a form
-/// optimized for execution, in a runtime-specific way. Construct one via
+/// PreparedJavaScript is a base class representing JavaScript which is in a
+/// form optimized for execution, in a runtime-specific way. Construct one via
 /// jsi::Runtime::prepareJavaScript().
 /// ** This is an experimental API that is subject to change. **
 class PreparedJavaScript {
@@ -64,9 +62,9 @@ class PreparedJavaScript {
 };
 
 enum class TypedArrayKind {
-  #define TYPED_ARRAY(name, content) name##Array,
-  #include "TypedArrays.def"
-  #undef TYPED_ARRAY
+#define TYPED_ARRAY(name, content) name##Array,
+#include "TypedArrays.def"
+#undef TYPED_ARRAY
 };
 
 class Runtime;
@@ -79,7 +77,8 @@ class WeakObject;
 class Array;
 class ArrayBuffer;
 class TypedArrayBase;
-template <TypedArrayKind T> class TypedArray;
+template <TypedArrayKind T>
+class TypedArray;
 class Function;
 class Value;
 class Instrumentation;
@@ -98,8 +97,8 @@ class JSError;
 /// HostFunctions may or may not be called in strict mode; that is `thisVal`
 /// can be any value - it will not necessarily be coerced to an object or
 /// or set to the global object.
-using HostFunctionType = std::function<
-    Value(Runtime& rt, const Value& thisVal, const Value* args, size_t count)>;
+using HostFunctionType = std::function<Value(Runtime& rt, const Value& thisVal,
+                                             const Value* args, size_t count)>;
 
 /// An object which implements this interface can be registered as an
 /// Object with the JS runtime.
@@ -166,9 +165,8 @@ class Runtime {
   /// through the JSI API. For example, it will be much slower to use this to
   /// call a global function than using the JSI APIs to read the function
   /// property from the global object and then calling it explicitly.
-  virtual Value evaluateJavaScript(
-      const std::shared_ptr<const Buffer>& buffer,
-      const std::string& sourceURL) = 0;
+  virtual Value evaluateJavaScript(const std::shared_ptr<const Buffer>& buffer,
+                                   const std::string& sourceURL) = 0;
 
   /// Prepares to evaluate the given JavaScript \c buffer by processing it into
   /// a form optimized for execution. This may include pre-parsing, compiling,
@@ -182,8 +180,7 @@ class Runtime {
   /// As with evaluateJavaScript(), using JavaScript code should be avoided
   /// when the JSI API is sufficient.
   virtual std::shared_ptr<const PreparedJavaScript> prepareJavaScript(
-      const std::shared_ptr<const Buffer>& buffer,
-      std::string sourceURL) = 0;
+      const std::shared_ptr<const Buffer>& buffer, std::string sourceURL) = 0;
 
   /// Evaluates a PreparedJavaScript. If evaluation causes an error, a
   /// JSIException will be thrown.
@@ -223,7 +220,8 @@ class Runtime {
   friend class Array;
   friend class ArrayBuffer;
   friend class TypedArrayBase;
-  template<TypedArrayKind> friend class TypedArray;
+  template <TypedArrayKind>
+  friend class TypedArray;
   friend class Function;
   friend class Value;
   friend class Scope;
@@ -246,12 +244,10 @@ class Runtime {
   virtual PointerValue* cloneObject(const Runtime::PointerValue* pv) = 0;
   virtual PointerValue* clonePropNameID(const Runtime::PointerValue* pv) = 0;
 
-  virtual PropNameID createPropNameIDFromAscii(
-      const char* str,
-      size_t length) = 0;
-  virtual PropNameID createPropNameIDFromUtf8(
-      const uint8_t* utf8,
-      size_t length) = 0;
+  virtual PropNameID createPropNameIDFromAscii(const char* str,
+                                               size_t length) = 0;
+  virtual PropNameID createPropNameIDFromUtf8(const uint8_t* utf8,
+                                              size_t length) = 0;
   virtual PropNameID createPropNameIDFromString(const String& str) = 0;
   virtual std::string utf8(const PropNameID&) = 0;
   virtual bool compare(const PropNameID&, const PropNameID&) = 0;
@@ -271,10 +267,10 @@ class Runtime {
   virtual Value getProperty(const Object&, const String& name) = 0;
   virtual bool hasProperty(const Object&, const PropNameID& name) = 0;
   virtual bool hasProperty(const Object&, const String& name) = 0;
-  virtual void
-  setPropertyValue(Object&, const PropNameID& name, const Value& value) = 0;
-  virtual void
-  setPropertyValue(Object&, const String& name, const Value& value) = 0;
+  virtual void setPropertyValue(Object&, const PropNameID& name,
+                                const Value& value) = 0;
+  virtual void setPropertyValue(Object&, const String& name,
+                                const Value& value) = 0;
 
   virtual bool isArray(const Object&) const = 0;
   virtual bool isArrayBuffer(const Object&) const = 0;
@@ -289,7 +285,8 @@ class Runtime {
   virtual Value lockWeakObject(const WeakObject&) = 0;
 
   virtual Array createArray(size_t length) = 0;
-  virtual TypedArrayBase createTypedArray(size_t length, TypedArrayKind kind) = 0;
+  virtual TypedArrayBase createTypedArray(size_t length,
+                                          TypedArrayKind kind) = 0;
   virtual size_t size(const Array&) = 0;
   virtual size_t size(const ArrayBuffer&) = 0;
   virtual size_t size(const TypedArrayBase&) = 0;
@@ -300,17 +297,13 @@ class Runtime {
   virtual Value getValueAtIndex(const Array&, size_t i) = 0;
   virtual void setValueAtIndexImpl(Array&, size_t i, const Value& value) = 0;
 
-  virtual Function createFunctionFromHostFunction(
-      const PropNameID& name,
-      unsigned int paramCount,
-      HostFunctionType func) = 0;
-  virtual Value call(
-      const Function&,
-      const Value& jsThis,
-      const Value* args,
-      size_t count) = 0;
-  virtual Value
-  callAsConstructor(const Function&, const Value* args, size_t count) = 0;
+  virtual Function createFunctionFromHostFunction(const PropNameID& name,
+                                                  unsigned int paramCount,
+                                                  HostFunctionType func) = 0;
+  virtual Value call(const Function&, const Value& jsThis, const Value* args,
+                     size_t count) = 0;
+  virtual Value callAsConstructor(const Function&, const Value* args,
+                                  size_t count) = 0;
 
   // Private data for managing scopes.
   struct ScopeState;
@@ -338,9 +331,7 @@ class Runtime {
 // Base class for pointer-storing types.
 class Pointer {
  protected:
-  explicit Pointer(Pointer&& other) : ptr_(other.ptr_) {
-    other.ptr_ = nullptr;
-  }
+  explicit Pointer(Pointer&& other) : ptr_(other.ptr_) { other.ptr_ = nullptr; }
 
   ~Pointer() {
     if (ptr_) {
@@ -387,8 +378,8 @@ class PropNameID : public Pointer {
   }
 
   /// Create a PropNameID from utf8 values.  The data is copied.
-  static PropNameID
-  forUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
+  static PropNameID forUtf8(Runtime& runtime, const uint8_t* utf8,
+                            size_t length) {
     return runtime.createPropNameIDFromUtf8(utf8, length);
   }
 
@@ -413,14 +404,10 @@ class PropNameID : public Pointer {
   static std::vector<PropNameID> names(PropNameID(&&propertyNames)[N]);
 
   /// Copies the data in a PropNameID as utf8 into a C++ string.
-  std::string utf8(Runtime& runtime) const {
-    return runtime.utf8(*this);
-  }
+  std::string utf8(Runtime& runtime) const { return runtime.utf8(*this); }
 
-  static bool compare(
-      Runtime& runtime,
-      const jsi::PropNameID& a,
-      const jsi::PropNameID& b) {
+  static bool compare(Runtime& runtime, const jsi::PropNameID& a,
+                      const jsi::PropNameID& b) {
     return runtime.compare(a, b);
   }
 
@@ -465,8 +452,8 @@ class String : public Pointer {
 
   /// Create a JS string from ascii values.  The string data is
   /// copied.
-  static String
-  createFromAscii(Runtime& runtime, const char* str, size_t length) {
+  static String createFromAscii(Runtime& runtime, const char* str,
+                                size_t length) {
     return runtime.createStringFromAscii(str, length);
   }
 
@@ -484,8 +471,8 @@ class String : public Pointer {
 
   /// Create a JS string from utf8-encoded octets.  The string data is
   /// transformed and copied.
-  static String
-  createFromUtf8(Runtime& runtime, const uint8_t* utf8, size_t length) {
+  static String createFromUtf8(Runtime& runtime, const uint8_t* utf8,
+                               size_t length) {
     return runtime.createStringFromUtf8(utf8, length);
   }
 
@@ -502,9 +489,7 @@ class String : public Pointer {
   }
 
   /// Copies the data in a JS string as utf8 into a C++ string.
-  std::string utf8(Runtime& runtime) const {
-    return runtime.utf8(*this);
-  }
+  std::string utf8(Runtime& runtime) const { return runtime.utf8(*this); }
 
   friend class Runtime;
   friend class Value;
@@ -524,9 +509,8 @@ class Object : public Pointer {
   /// Creates a new Object instance, like '{}' in JS.
   Object(Runtime& runtime) : Object(runtime.createObject()) {}
 
-  static Object createFromHostObject(
-      Runtime& runtime,
-      std::shared_ptr<HostObject> ho) {
+  static Object createFromHostObject(Runtime& runtime,
+                                     std::shared_ptr<HostObject> ho) {
     return runtime.createObject(ho);
   }
 
@@ -587,9 +571,7 @@ class Object : public Pointer {
 
   /// \return true iff JS \c Array.isArray() would return \c true.  If
   /// so, then \c getArray() will succeed.
-  bool isArray(Runtime& runtime) const {
-    return runtime.isArray(*this);
-  }
+  bool isArray(Runtime& runtime) const { return runtime.isArray(*this); }
 
   /// \return true iff the Object is an ArrayBuffer. If so, then \c
   /// getArrayBuffer() will succeed.
@@ -603,9 +585,7 @@ class Object : public Pointer {
 
   /// \return true iff the Object is callable.  If so, then \c
   /// getFunction will succeed.
-  bool isFunction(Runtime& runtime) const {
-    return runtime.isFunction(*this);
-  }
+  bool isFunction(Runtime& runtime) const { return runtime.isFunction(*this); }
 
   /// \return true iff the Object was initialized with \c createFromHostObject
   /// and the HostObject passed is of type \c T. If returns \c true then
@@ -641,7 +621,6 @@ class Object : public Pointer {
 
   ArrayBuffer asArrayBuffer(Runtime& runtime) const&;
   ArrayBuffer asArrayBuffer(Runtime& runtime) &&;
-
 
   TypedArrayBase getTypedArray(Runtime& runtime) const&;
   TypedArrayBase getTypedArray(Runtime& runtime) &&;
@@ -696,15 +675,13 @@ class Object : public Pointer {
   Array getPropertyNames(Runtime& runtime) const;
 
  protected:
-  void
-  setPropertyValue(Runtime& runtime, const String& name, const Value& value) {
+  void setPropertyValue(Runtime& runtime, const String& name,
+                        const Value& value) {
     return runtime.setPropertyValue(*this, name, value);
   }
 
-  void setPropertyValue(
-      Runtime& runtime,
-      const PropNameID& name,
-      const Value& value) {
+  void setPropertyValue(Runtime& runtime, const PropNameID& name,
+                        const Value& value) {
     return runtime.setPropertyValue(*this, name, value);
   }
 
@@ -747,15 +724,11 @@ class Array : public Object {
 
   /// \return the size of the Array, according to its length property.
   /// (C++ naming convention)
-  size_t size(Runtime& runtime) const {
-    return runtime.size(*this);
-  }
+  size_t size(Runtime& runtime) const { return runtime.size(*this); }
 
   /// \return the size of the Array, according to its length property.
   /// (JS naming convention)
-  size_t length(Runtime& runtime) const {
-    return size(runtime);
-  }
+  size_t length(Runtime& runtime) const { return size(runtime); }
 
   /// \return the property of the array at index \c i.  If there is no
   /// such property, returns the undefined value.  If \c i is out of
@@ -776,9 +749,8 @@ class Array : public Object {
   static Array createWithElements(Runtime&, Args&&... args);
 
   /// Creates a new Array instance from initializer list.
-  static Array createWithElements(
-      Runtime& runtime,
-      std::initializer_list<Value> elements);
+  static Array createWithElements(Runtime& runtime,
+                                  std::initializer_list<Value> elements);
 
  private:
   friend class Object;
@@ -799,17 +771,11 @@ class ArrayBuffer : public Object {
 
   /// \return the size of the ArrayBuffer, according to its byteLength property.
   /// (C++ naming convention)
-  size_t size(Runtime& runtime) const {
-    return runtime.size(*this);
-  }
+  size_t size(Runtime& runtime) const { return runtime.size(*this); }
 
-  size_t length(Runtime& runtime) const {
-    return runtime.size(*this);
-  }
+  size_t length(Runtime& runtime) const { return runtime.size(*this); }
 
-  size_t byteLength(Runtime& runtime) const {
-    return runtime.size(*this);
-  }
+  size_t byteLength(Runtime& runtime) const { return runtime.size(*this); }
 
   std::vector<uint8_t> data(Runtime& runtime) const;
   void update(Runtime&, std::vector<uint8_t>, size_t offset = 0);
@@ -823,33 +789,41 @@ class ArrayBuffer : public Object {
 
 class TypedArrayBase : public Object {
  private:
-  template <TypedArrayKind T> struct typeMap;
-  #define TYPED_ARRAY(name, content) \
-    template <> struct typeMap<TypedArrayKind::name##Array> { typedef content type; };
-  #include "TypedArrays.def"
-  #undef TYPED_ARRAY
-  
- public:
-  template<TypedArrayKind T> using ContentType = typename typeMap<T>::type;
+  template <TypedArrayKind T>
+  struct typeMap;
+#define TYPED_ARRAY(name, content)              \
+  template <>                                   \
+  struct typeMap<TypedArrayKind::name##Array> { \
+    typedef content type;                       \
+  };
+#include "TypedArrays.def"
+#undef TYPED_ARRAY
 
-  TypedArrayBase(Runtime& runtime, size_t size, TypedArrayKind kind) : TypedArrayBase(runtime.createTypedArray(size, kind)) {}
+ public:
+  template <TypedArrayKind T>
+  using ContentType = typename typeMap<T>::type;
+
+  TypedArrayBase(Runtime& runtime, size_t size, TypedArrayKind kind)
+      : TypedArrayBase(runtime.createTypedArray(size, kind)) {}
   TypedArrayBase(TypedArrayBase&&) = default;
   TypedArrayBase& operator=(TypedArrayBase&&) = default;
 
-  TypedArrayKind getKind(Runtime& runtime) const { return runtime.getTypedArrayKind(*this); };
+  TypedArrayKind getKind(Runtime& runtime) const {
+    return runtime.getTypedArrayKind(*this);
+  };
 
-  template<TypedArrayKind T>TypedArray<T> get(Runtime& runtime) const&;
-  template<TypedArrayKind T>TypedArray<T> get(Runtime& runtime) &&;
-  template<TypedArrayKind T>TypedArray<T> as(Runtime& runtime) const&;
-  template<TypedArrayKind T>TypedArray<T> as(Runtime& runtime) &&;
+  template <TypedArrayKind T>
+  TypedArray<T> get(Runtime& runtime) const&;
+  template <TypedArrayKind T>
+  TypedArray<T> get(Runtime& runtime) &&;
+  template <TypedArrayKind T>
+  TypedArray<T> as(Runtime& runtime) const&;
+  template <TypedArrayKind T>
+  TypedArray<T> as(Runtime& runtime) &&;
 
-  size_t size(Runtime& runtime) const {
-    return runtime.size(*this);
-  }
+  size_t size(Runtime& runtime) const { return runtime.size(*this); }
 
-  size_t length(Runtime& runtime) const {
-    return runtime.size(*this);
-  }
+  size_t length(Runtime& runtime) const { return runtime.size(*this); }
 
   size_t byteLength(Runtime& runtime) const {
     if (hasBuffer(runtime)) {
@@ -862,9 +836,7 @@ class TypedArrayBase : public Object {
     return runtime.byteOffset(*this);
   }
 
-  bool hasBuffer(Runtime& runtime) const {
-    return runtime.hasBuffer(*this);
-  }
+  bool hasBuffer(Runtime& runtime) const { return runtime.hasBuffer(*this); }
 
   ArrayBuffer getBuffer(Runtime& runtime) const {
     return runtime.getBuffer(*this);
@@ -873,16 +845,19 @@ class TypedArrayBase : public Object {
  private:
   friend class Object;
   friend class Value;
-  template <TypedArrayKind> friend class TypedArray;
-  
+  template <TypedArrayKind>
+  friend class TypedArray;
+
   TypedArrayBase(Runtime::PointerValue* value) : Object(value) {}
 };
 
 template <TypedArrayKind T>
 class TypedArray : public TypedArrayBase {
  public:
-  TypedArray(Runtime& runtime, size_t size) : TypedArrayBase(runtime.createTypedArray(size, T)) {};
-  TypedArray(Runtime& runtime, std::vector<ContentType<T>> data) : TypedArrayBase(runtime.createTypedArray(data.size(), T)) {
+  TypedArray(Runtime& runtime, size_t size)
+      : TypedArrayBase(runtime.createTypedArray(size, T)){};
+  TypedArray(Runtime& runtime, std::vector<ContentType<T>> data)
+      : TypedArrayBase(runtime.createTypedArray(data.size(), T)) {
     update(runtime, data);
   };
   TypedArray(TypedArray&&) = default;
@@ -892,12 +867,12 @@ class TypedArray : public TypedArrayBase {
 
   std::vector<ContentType<T>> data(Runtime& runtime);
   void update(Runtime& runtime, std::vector<ContentType<T>>);
+
  private:
   friend TypedArrayBase;
-  
+
   TypedArray(Runtime::PointerValue* value) : TypedArrayBase(value) {}
 };
-
 
 /// Represents a JS Object which is guaranteed to be Callable.
 class Function : public Object {
@@ -911,11 +886,10 @@ class Function : public Object {
   /// \param name the name property for the function.
   /// \param paramCount the length property for the function, which
   /// may not be the number of arguments the function is passed.
-  static Function createFromHostFunction(
-      Runtime& runtime,
-      const jsi::PropNameID& name,
-      unsigned int paramCount,
-      jsi::HostFunctionType func);
+  static Function createFromHostFunction(Runtime& runtime,
+                                         const jsi::PropNameID& name,
+                                         unsigned int paramCount,
+                                         jsi::HostFunctionType func);
 
   /// Calls the function with \c count \c args.  The \c this value of
   /// the JS function will be undefined.
@@ -934,37 +908,32 @@ class Function : public Object {
 
   /// Calls the function with \c count \c args and \c jsThis value passed
   /// as this value.
-  Value callWithThis(
-      Runtime& Runtime,
-      const Object& jsThis,
-      const Value* args,
-      size_t count) const;
+  Value callWithThis(Runtime& Runtime, const Object& jsThis, const Value* args,
+                     size_t count) const;
 
   /// Calls the function with a \c std::initializer_list of Value
   /// arguments. The \c this value of the JS function will be
   /// undefined.
-  Value callWithThis(
-      Runtime& runtime,
-      const Object& jsThis,
-      std::initializer_list<Value> args) const;
+  Value callWithThis(Runtime& runtime, const Object& jsThis,
+                     std::initializer_list<Value> args) const;
 
   /// Calls the function with any number of arguments similarly to
   /// Object::setProperty().  The \c this value of the JS function
   /// will be undefined.
   template <typename... Args>
-  Value callWithThis(Runtime& runtime, const Object& jsThis, Args&&... args)
-      const;
+  Value callWithThis(Runtime& runtime, const Object& jsThis,
+                     Args&&... args) const;
 
   /// Calls the function as a constructor with \c count \c args. Equivalent
   /// to calling `new Func` where `Func` is the js function reqresented by
   /// this.
-  Value callAsConstructor(Runtime& runtime, const Value* args, size_t count)
-      const;
+  Value callAsConstructor(Runtime& runtime, const Value* args,
+                          size_t count) const;
 
   /// Same as above `callAsConstructor`, except use an initializer_list to
   /// supply the arguments.
-  Value callAsConstructor(Runtime& runtime, std::initializer_list<Value> args)
-      const;
+  Value callAsConstructor(Runtime& runtime,
+                          std::initializer_list<Value> args) const;
 
   /// Same as above `callAsConstructor`, but automatically converts/wraps
   /// any argument with a jsi Value.
@@ -1009,28 +978,21 @@ class Value {
   /* implicit */ Value(std::nullptr_t) : kind_(NullKind) {}
 
   /// Creates a boolean JS value.
-  /* implicit */ Value(bool b) : Value(BooleanKind) {
-    data_.boolean = b;
-  }
+  /* implicit */ Value(bool b) : Value(BooleanKind) { data_.boolean = b; }
 
   /// Creates a number JS value.
-  /* implicit */ Value(double d) : Value(NumberKind) {
-    data_.number = d;
-  }
+  /* implicit */ Value(double d) : Value(NumberKind) { data_.number = d; }
 
   /// Creates a number JS value.
-  /* implicit */ Value(int i) : Value(NumberKind) {
-    data_.number = i;
-  }
+  /* implicit */ Value(int i) : Value(NumberKind) { data_.number = i; }
 
   /// Moves a Symbol, String, or Object rvalue into a new JS value.
   template <typename T>
   /* implicit */ Value(T&& other) : Value(kindOf(other)) {
-    static_assert(
-        std::is_base_of<Symbol, T>::value ||
-            std::is_base_of<String, T>::value ||
-            std::is_base_of<Object, T>::value,
-        "Value cannot be implicitly move-constructed from this type");
+    static_assert(std::is_base_of<Symbol, T>::value ||
+                      std::is_base_of<String, T>::value ||
+                      std::is_base_of<Object, T>::value,
+                  "Value cannot be implicitly move-constructed from this type");
     new (&data_.pointer) T(std::move(other));
   }
 
@@ -1038,9 +1000,8 @@ class Value {
   /// compile error.
   template <typename T = void>
   Value(const char*) {
-    static_assert(
-        !std::is_same<void, T>::value,
-        "Value cannot be constructed directly from const char*");
+    static_assert(!std::is_same<void, T>::value,
+                  "Value cannot be constructed directly from const char*");
   }
 
   Value(Value&& value);
@@ -1067,25 +1028,20 @@ class Value {
   /// that a compile error.
   template <typename T = void>
   Value(Runtime&, const char*) {
-    static_assert(
-        !std::is_same<T, void>::value,
-        "Value cannot be constructed directly from const char*");
+    static_assert(!std::is_same<T, void>::value,
+                  "Value cannot be constructed directly from const char*");
   }
 
   ~Value();
   // \return the undefined \c Value.
-  static Value undefined() {
-    return Value();
-  }
+  static Value undefined() { return Value(); }
 
   // \return the null \c Value.
-  static Value null() {
-    return Value(nullptr);
-  }
+  static Value null() { return Value(nullptr); }
 
   // \return a \c Value created from a utf8-encoded JSON string.
-  static Value
-  createFromJsonUtf8(Runtime& runtime, const uint8_t* json, size_t length);
+  static Value createFromJsonUtf8(Runtime& runtime, const uint8_t* json,
+                                  size_t length);
 
   /// \return according to the SameValue algorithm see more here:
   //  https://www.ecma-international.org/ecma-262/5.1/#sec-11.9.4
@@ -1097,33 +1053,19 @@ class Value {
     return *this;
   }
 
-  bool isUndefined() const {
-    return kind_ == UndefinedKind;
-  }
+  bool isUndefined() const { return kind_ == UndefinedKind; }
 
-  bool isNull() const {
-    return kind_ == NullKind;
-  }
+  bool isNull() const { return kind_ == NullKind; }
 
-  bool isBool() const {
-    return kind_ == BooleanKind;
-  }
+  bool isBool() const { return kind_ == BooleanKind; }
 
-  bool isNumber() const {
-    return kind_ == NumberKind;
-  }
+  bool isNumber() const { return kind_ == NumberKind; }
 
-  bool isString() const {
-    return kind_ == StringKind;
-  }
+  bool isString() const { return kind_ == StringKind; }
 
-  bool isSymbol() const {
-    return kind_ == SymbolKind;
-  }
+  bool isSymbol() const { return kind_ == SymbolKind; }
 
-  bool isObject() const {
-    return kind_ == ObjectKind;
-  }
+  bool isObject() const { return kind_ == ObjectKind; }
 
   /// \return the boolean value, or asserts if not a boolean.
   bool getBool() const {
@@ -1221,9 +1163,8 @@ class Value {
   union Data {
     // Value's ctor and dtor will manage the lifecycle of the contained Data.
     Data() {
-      static_assert(
-          sizeof(Data) == sizeof(uint64_t),
-          "Value data should fit in a 64-bit register");
+      static_assert(sizeof(Data) == sizeof(uint64_t),
+                    "Value data should fit in a 64-bit register");
     }
     ~Data() {}
 
@@ -1231,20 +1172,14 @@ class Value {
     bool boolean;
     double number;
     // pointers
-    Pointer pointer; // Symbol, String, Object, Array, Function
+    Pointer pointer;  // Symbol, String, Object, Array, Function
   };
 
   Value(ValueKind kind) : kind_(kind) {}
 
-  constexpr static ValueKind kindOf(const Symbol&) {
-    return SymbolKind;
-  }
-  constexpr static ValueKind kindOf(const String&) {
-    return StringKind;
-  }
-  constexpr static ValueKind kindOf(const Object&) {
-    return ObjectKind;
-  }
+  constexpr static ValueKind kindOf(const Symbol&) { return SymbolKind; }
+  constexpr static ValueKind kindOf(const String&) { return StringKind; }
+  constexpr static ValueKind kindOf(const Object&) { return ObjectKind; }
 
   ValueKind kind_;
   Data data_;
@@ -1273,9 +1208,7 @@ class Value {
 class Scope {
  public:
   explicit Scope(Runtime& rt) : rt_(rt), prv_(rt.pushScope()) {}
-  ~Scope() {
-    rt_.popScope(prv_);
-  };
+  ~Scope() { rt_.popScope(prv_); };
 
   Scope(const Scope&) = delete;
   Scope(Scope&&) = delete;
@@ -1301,9 +1234,7 @@ class JSIException : public std::exception {
   JSIException(std::string what) : what_(std::move(what)){};
 
  public:
-  virtual const char* what() const noexcept override {
-    return what_.c_str();
-  }
+  virtual const char* what() const noexcept override { return what_.c_str(); }
 
  protected:
   std::string what_;
@@ -1342,13 +1273,9 @@ class JSError : public JSIException {
   /// but necessary to avoid ambiguity with the above.
   JSError(std::string what, Runtime& rt, Value&& value);
 
-  const std::string& getStack() const {
-    return stack_;
-  }
+  const std::string& getStack() const { return stack_; }
 
-  const std::string& getMessage() const {
-    return message_;
-  }
+  const std::string& getMessage() const { return message_; }
 
   const jsi::Value& value() const {
     assert(value_);
@@ -1368,7 +1295,7 @@ class JSError : public JSIException {
   std::string stack_;
 };
 
-} // namespace jsi
-} // namespace facebook
+}  // namespace jsi
+}  // namespace facebook
 
 #include <jsi/jsi-inl.h>
