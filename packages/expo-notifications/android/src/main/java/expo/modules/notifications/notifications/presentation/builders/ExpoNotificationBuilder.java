@@ -29,6 +29,7 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
   private static final String SOUND_KEY = "sound";
   private static final String BADGE_KEY = "badge";
   private static final String BODY_KEY = "body";
+  private static final String PRIORITY_KEY = "priority";
   private static final String THUMBNAIL_URI_KEY = "thumbnailUri";
 
   private static final String EXTRAS_BADGE_KEY = "badge";
@@ -75,6 +76,11 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
     } else {
       // Do not display as a heads-up notification, but show in the notification tray
       builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+    }
+
+    Number priorityOverride = getPriorityOverride();
+    if (priorityOverride != null) {
+      builder.setPriority(priorityOverride.intValue());
     }
 
     if (shouldPlaySound()) {
@@ -153,5 +159,24 @@ public class ExpoNotificationBuilder implements NotificationBuilder {
 
   private boolean shouldSetBadge() {
     return !mNotificationRequest.isNull(BADGE_KEY);
+  }
+
+  private Number getPriorityOverride() {
+    if (mNotificationRequest.isNull(PRIORITY_KEY)) {
+      return null;
+    }
+
+    switch (mNotificationRequest.optString(PRIORITY_KEY)) {
+      case "max":
+        return NotificationCompat.PRIORITY_MAX;
+      case "high":
+        return NotificationCompat.PRIORITY_HIGH;
+      case "low":
+        return NotificationCompat.PRIORITY_LOW;
+      case "min":
+        return NotificationCompat.PRIORITY_MIN;
+      default:
+        return null;
+    }
   }
 }
