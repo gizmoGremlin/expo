@@ -6496,6 +6496,19 @@ CACHE_KEYS:
     PROJECT_NAME: EXFileSystem
     SPECS:
       - EXFileSystem (8.0.0)
+  EXFirebaseCore:
+    BUILD_SETTINGS_CHECKSUM:
+      EXFirebaseCore: 1d808549b6223d57e1cc0b09101db157
+    CHECKSUM: 4e0976590135563e26af5050916879d5ee218f1b
+    FILES:
+      - "../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.h"
+      - "../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore+FIROptions.m"
+      - "../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore.h"
+      - "../../packages/expo-firebase-core/ios/EXFirebaseCore/EXFirebaseCore.m"
+      - "../../packages/expo-firebase-core/ios/EXFirebaseCore/UMFirebaseCoreInterface.h"
+    PROJECT_NAME: EXFirebaseCore
+    SPECS:
+      - EXFirebaseCore (1.0.0)
   EXFont:
     BUILD_SETTINGS_CHECKSUM:
       EXFont: 54a701ae9a0214506a040344456fe670
@@ -7169,16 +7182,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.9011)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 4b22a0424674fb4aa5af0e3b99e5ca01
-      Release: 4b22a0424674fb4aa5af0e3b99e5ca01
+      Debug: 03dd251c57ee8c26f1c5793c35800cd0
+      Release: 03dd251c57ee8c26f1c5793c35800cd0
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 01d535d12867663316fe30a75b374e05
-      Release: 01d535d12867663316fe30a75b374e05
+      Debug: b9eeb3ca3cea0212abc5515b328cdffe
+      Release: b9eeb3ca3cea0212abc5515b328cdffe
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 01d535d12867663316fe30a75b374e05
-      Release: 01d535d12867663316fe30a75b374e05
+      Debug: b9eeb3ca3cea0212abc5515b328cdffe
+      Release: b9eeb3ca3cea0212abc5515b328cdffe
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
